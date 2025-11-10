@@ -1,5 +1,6 @@
 package com.nikilaihoretski.auth_service.configuration;
 
+import com.nikilaihoretski.auth_service.model.Permissions;
 import com.nikilaihoretski.auth_service.security.JWTAuthFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -33,7 +34,17 @@ public class SecurityConfig {
                         .requestMatchers("/api/login").permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .requestMatchers("/user/**").hasAnyRole("USER", "ADMIN")
-                        .requestMatchers("/reports/**").hasAnyAuthority("READ_PRIVILEGE", "WRITE_PRIVILEGE", "DELETE_PRIVILEGE", "EXECUTE_PRIVILEGE")
+                        .requestMatchers("/reports/**").hasAnyAuthority(
+                                Permissions.VIEW_PRODUCTS.toString(),
+                                Permissions.ADD_PRODUCTS_TO_CART.toString(),
+                                Permissions.CREATE_ORDER.toString(),
+                                Permissions.VIEW_OWN_ORDERS.toString(),
+                                Permissions.VIEW_ALL_ORDERS.toString(),
+                                Permissions.UPDATE_ORDER_STATUS.toString(),
+                                Permissions.MANAGE_INVENTORY_WAREHOUSE.toString(),
+                                Permissions.MANAGE_USERS.toString(),
+                                Permissions.MANAGE_PRODUCTS_CATALOG.toString()
+                        )
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

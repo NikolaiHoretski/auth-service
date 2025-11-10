@@ -29,17 +29,19 @@ public class CustomUserDetails implements UserDetails {
         user.getRoles().forEach(role -> {
             authority.add(new SimpleGrantedAuthority("ROLE_" + role.getName()));
             if (role.getName().equalsIgnoreCase(Roles.ADMIN.toString())) {
-                authority.add(new SimpleGrantedAuthority(Permissions.READ_PRIVILEGE.toString()));
-                authority.add(new SimpleGrantedAuthority(Permissions.WRITE_PRIVILEGE.toString()));
-                authority.add(new SimpleGrantedAuthority(Permissions.DELETE_PRIVILEGE.toString()));
-                authority.add(new SimpleGrantedAuthority(Permissions.EXECUTE_PRIVILEGE.toString()));
+                authority.add(new SimpleGrantedAuthority(Permissions.MANAGE_PRODUCTS_CATALOG.toString()));
+                authority.add(new SimpleGrantedAuthority(Permissions.ADD_PRODUCTS_TO_CART.toString()));
+                authority.add(new SimpleGrantedAuthority(Permissions.MANAGE_USERS.toString()));
+                authority.add(new SimpleGrantedAuthority(Permissions.CREATE_ORDER.toString()));
+                authority.add(new SimpleGrantedAuthority(Permissions.MANAGE_INVENTORY_WAREHOUSE.toString()));
+                authority.add(new SimpleGrantedAuthority(Permissions.VIEW_ALL_ORDERS.toString()));
+                authority.add(new SimpleGrantedAuthority(Permissions.VIEW_PRODUCTS.toString()));
+                authority.add(new SimpleGrantedAuthority(Permissions.VIEW_OWN_ORDERS.toString()));
+                authority.add(new SimpleGrantedAuthority(Permissions.UPDATE_ORDER_STATUS.toString()));
             } else {
                 role.getPermissions().forEach(permission -> authority.add(new SimpleGrantedAuthority((permission.getName()))));
             }
         });
-
-//        user.getPermissions().forEach(permission ->
-//                authorities.add(new SimpleGrantedAuthority(permission.getName())));
 
         return authority;
     }

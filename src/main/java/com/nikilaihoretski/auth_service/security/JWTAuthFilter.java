@@ -41,21 +41,21 @@ public class JWTAuthFilter extends OncePerRequestFilter {
 
         final String authHeader = request.getHeader("Authorization");
         String token = null;
-        String userId = null;
+        String username = null;
 
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             token = authHeader.substring(7);
             try {
-                userId = jwtService.generateUserIdFromToken(token);
+                username = jwtService.generateUserIdFromToken(token);
             } catch (Exception e) {
-                logger.error("Failed to extract userId from token", e);
+                logger.error("Failed to extract username from token", e);
             }
         }
 
-        if (userId != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             try {
                 CustomUserDetailService userDetailService = context.getBean(CustomUserDetailService.class);
-                UserDetails userDetails = userDetailService.loadUserById(Long.parseLong(userId));
+                UserDetails userDetails = userDetailService.loadUserByUsername(username);
 
                 UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                 authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));

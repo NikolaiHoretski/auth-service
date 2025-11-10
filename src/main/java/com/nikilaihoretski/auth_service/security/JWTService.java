@@ -1,13 +1,13 @@
 package com.nikilaihoretski.auth_service.security;
 
-import com.nikilaihoretski.auth_service.dto.UserDtoForJwtToken;
-import com.nikilaihoretski.auth_service.dto.UserMapper;
 import com.nikilaihoretski.auth_service.model.Permission;
 import com.nikilaihoretski.auth_service.model.Role;
 import com.nikilaihoretski.auth_service.model.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +19,8 @@ import java.util.stream.Collectors;
 
 @Service
 public class JWTService {
+
+    Logger logger = LoggerFactory.getLogger(JWTService.class);
 
     @Value("${jwt.secretKey}")
     private String jwtSecreteKey;
@@ -37,14 +39,19 @@ public class JWTService {
                 .flatMap(role -> role.getPermissions().stream().map(Permission::getName))
                 .collect(Collectors.toSet());
 
+        logger.info(permissions.toString());
+        logger.info(roles.toString());
+        logger.info(user.getUsername());
+        logger.info(user.getEmail());
+
 
         return Jwts.builder()
-                .subject(user.getId().toString())
+                .subject(user.getUsername())
                 .claim("email", user.getEmail())
-                .claim("roles", user.getRoles())
+                .claim("roles", roles)
                 .claim("permissions", permissions)
                 .issuedAt(new Date())
-                .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60))
+                .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 10))
                 .signWith(generateSecretKey())
                 .compact();
     }
@@ -54,7 +61,7 @@ public class JWTService {
         return Jwts.builder()
                 .subject(user.getId().toString())
                 .issuedAt(new Date())
-                .expiration(new Date(System.currentTimeMillis() + 1000L * 60 * 60 * 24 * 30 * 6))
+                .expiration(new Date(System.currentTimeMillis() + 1000L * 60 * 60 * 24 * 30 * 3))
                 .signWith(generateSecretKey())
                 .compact();
     }
