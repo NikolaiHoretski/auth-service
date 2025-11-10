@@ -1,6 +1,5 @@
 package com.nikilaihoretski.auth_service.security;
 
-import com.nikilaihoretski.auth_service.model.User;
 import com.nikilaihoretski.auth_service.repository.UserRepository;
 import com.nikilaihoretski.auth_service.service.CustomUserDetailService;
 import com.nikilaihoretski.auth_service.service.UserServiceImpl;
