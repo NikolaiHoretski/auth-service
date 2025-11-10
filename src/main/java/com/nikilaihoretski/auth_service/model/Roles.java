@@ -5,5 +5,5 @@ public enum Roles {
     GUEST,
     CUSTOMER,
     MANAGER,
-    WEREHOUSE
+    WAREHOUSE
 }
