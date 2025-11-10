@@ -2,6 +2,7 @@ package com.nikilaihoretski.auth_service.security;
 
 import com.nikilaihoretski.auth_service.dto.UserDtoForJwtToken;
 import com.nikilaihoretski.auth_service.dto.UserMapper;
+import com.nikilaihoretski.auth_service.model.Permission;
 import com.nikilaihoretski.auth_service.model.Role;
 import com.nikilaihoretski.auth_service.model.User;
 import io.jsonwebtoken.Claims;
@@ -13,6 +14,8 @@ import org.springframework.stereotype.Service;
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class JWTService {
@@ -24,40 +27,49 @@ public class JWTService {
         return Keys.hmacShaKeyFor(jwtSecreteKey.getBytes(StandardCharsets.UTF_8));
     }
 
-    public String createAccessToken(User user, Role role) {
+    public String createAccessToken(User user) {
 
-        UserDtoForJwtToken dto = UserMapper.toDto(user, role);
+        Set<String> roles = user.getRoles().stream()
+                .map(Role::getName)
+                .collect(Collectors.toSet());
+
+        Set<String> permissions = user.getRoles().stream()
+                .flatMap(role -> role.getPermissions().stream().map(Permission::getName))
+                .collect(Collectors.toSet());
+
 
         return Jwts.builder()
-                .subject(dto.getId().toString())
-                .claim("email", dto.getEmail())
-                .claim("roles", dto.getRoles().toString())
-                .claim("permissions", dto.getPermissions().toString())
+                .subject(user.getId().toString())
+                .claim("email", user.getEmail())
+                .claim("roles", user.getRoles())
+                .claim("permissions", permissions)
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60))
                 .signWith(generateSecretKey())
                 .compact();
     }
 
-    public String createRefreshToken(User user, Role role) {
-
-        UserDtoForJwtToken dto = UserMapper.toDto(user, role);
+    public String createRefreshToken(User user) {
 
         return Jwts.builder()
-                .subject(dto.getId().toString())
+                .subject(user.getId().toString())
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + 1000L * 60 * 60 * 24 * 30 * 6))
                 .signWith(generateSecretKey())
                 .compact();
     }
 
-    public String generateUserIdFromToken(String token) {
+    public String generateUserIdFromToken(String token) throws IllegalAccessException {
+
+        if(token == null || token.isEmpty()) {
+            throw  new IllegalAccessException("JWT token is missing");
+        }
         Claims claims = Jwts.parser()
                 .verifyWith(generateSecretKey())
                 .build()
                 .parseSignedClaims(token)
                 .getPayload();
 
-        return String.valueOf(Long.valueOf(claims.getSubject()));
+        return claims.getSubject();
     }
 }

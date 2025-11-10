@@ -4,12 +4,12 @@ CREATE SEQUENCE PERM_SEQ START 1 INCREMENT 1;
 
 CREATE TABLE permissions (
     id BIGINT PRIMARY KEY DEFAULT nextval('PERM_SEQ'),
-    name VARCHAR(100) NOT NULL UNIQUE
+    permission_name VARCHAR(100) NOT NULL UNIQUE
 );
 
 CREATE TABLE roles (
     id BIGINT PRIMARY KEY DEFAULT nextval('ROLE_SEQ'),
-    name VARCHAR(100) NOT NULL UNIQUE
+    role_name VARCHAR(100) NOT NULL UNIQUE
 );
 
 CREATE TABLE roles_permissions (
@@ -31,7 +31,7 @@ CREATE TABLE users (
     CONSTRAINT uq_username UNIQUE (username)
 );
 
-CREATE TABLE users_role (
+CREATE TABLE users_roles (
     user_id BIGINT NOT NULL,
     role_id BIGINT NOT NULL,
     CONSTRAINT fk_users_roles_user FOREIGN KEY (user_id)

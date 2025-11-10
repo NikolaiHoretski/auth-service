@@ -1,11 +1,11 @@
-INSERT INTO permissions (name) VALUES ('READ_PRIVILEGE');
-INSERT INTO permissions (name) VALUES ('WRITE_PRIVILEGE');
-INSERT INTO permissions (name) VALUES ('DELETE_PRIVILEGE');
-INSERT INTO permissions (name) VALUES ('EXECUTE_PRIVILEGE');
+INSERT INTO permissions (permission_name) VALUES ('READ_PRIVILEGE');
+INSERT INTO permissions (permission_name) VALUES ('WRITE_PRIVILEGE');
+INSERT INTO permissions (permission_name) VALUES ('DELETE_PRIVILEGE');
+INSERT INTO permissions (permission_name) VALUES ('EXECUTE_PRIVILEGE');
 
-INSERT INTO roles (name) VALUES ('ADMIN');
-INSERT INTO roles (name) VALUES ('USER');
-INSERT INTO roles (name) VALUES ('MANAGER');
+INSERT INTO roles (role_name) VALUES ('ADMIN');
+INSERT INTO roles (role_name) VALUES ('USER');
+INSERT INTO roles (role_name) VALUES ('MANAGER');
 
 -- ADMIN имеет все разрешения
 INSERT INTO roles_permissions (role_id, permission_id) VALUES (1, 1);
