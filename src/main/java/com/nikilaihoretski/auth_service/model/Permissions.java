@@ -9,5 +9,9 @@ public enum Permissions {
     UPDATE_ORDER_STATUS,
     MANAGE_INVENTORY_WAREHOUSE,
     MANAGE_USERS,
-    MANAGE_PRODUCTS_CATALOG
+    MANAGE_PRODUCTS_CATALOG;
+
+    public String getAuthority() {
+        return this.name();
+    }
 }

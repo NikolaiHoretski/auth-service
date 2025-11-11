@@ -25,6 +25,7 @@ CREATE TABLE roles_permissions (
 CREATE TABLE users (
     id BIGINT PRIMARY KEY DEFAULT nextval('USER_SEQ'),
     username VARCHAR(255) NOT NULL,
+    fullname VARCHAR(255),
     password VARCHAR(255) NOT NULL,
     email VARCHAR(255),
     enabled BOOLEAN DEFAULT TRUE,
