@@ -1,21 +1,20 @@
 package com.nikilaihoretski.auth_service.dto;
-import com.nikilaihoretski.auth_service.model.Role;
-import com.nikilaihoretski.auth_service.model.User;
 
+import com.nikilaihoretski.auth_service.model.User;
 
 public class UserMapper {
 
-    public static UserDtoForJwtToken toDto(User user, Role role) {
+    public static UserDtoForCreateJwtToken toDto(User user) {
 
-        if (user == null) return null;
+        if (user == null) {
+            throw new IllegalArgumentException("Mapping to DTO was not performed");
+        }
 
-        UserDtoForJwtToken dto = new UserDtoForJwtToken();
-        dto.setId(user.getId());
+        UserDtoForCreateJwtToken dto = new UserDtoForCreateJwtToken();
+
         dto.setUsername(user.getUsername());
         dto.setEmail(user.getEmail());
-        dto.setRoles(user.getRoles());
-        dto.setPermissions(role.getPermissions());
-
+        dto.setFullName(user.getFullName());
 
         return dto;
     }

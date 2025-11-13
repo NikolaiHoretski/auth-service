@@ -1,5 +1,7 @@
 package com.nikilaihoretski.auth_service.security;
 
+import com.nikilaihoretski.auth_service.dto.UserDtoForCreateJwtToken;
+import com.nikilaihoretski.auth_service.dto.UserMapper;
 import com.nikilaihoretski.auth_service.model.Permission;
 import com.nikilaihoretski.auth_service.model.Role;
 import com.nikilaihoretski.auth_service.model.User;
@@ -31,26 +33,15 @@ public class JWTService {
 
     public String createAccessToken(User user) {
 
-        Set<String> roles = user.getRoles().stream()
-                .map(Role::getName)
-                .collect(Collectors.toSet());
+        UserDtoForCreateJwtToken dto = UserMapper.toDto(user);
 
-        Set<String> permissions = user.getRoles().stream()
-                .flatMap(role -> role.getPermissions().stream().map(Permission::getName))
-                .collect(Collectors.toSet());
-
-        logger.info(permissions.toString());
-        logger.info(roles.toString());
         logger.info(user.getUsername());
         logger.info(user.getEmail());
 
-
         return Jwts.builder()
-                .subject(user.getUsername())
-                .claim("email", user.getEmail())
-                .claim("fullname", user.getFullName())
-//                .claim("role", roles)
-//                .claim("permissions", permissions)
+                .subject(dto.getUsername())
+                .claim("email", dto.getEmail())
+                .claim("fullname", dto.getFullName())
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 10))
                 .signWith(generateSecretKey())
@@ -59,8 +50,10 @@ public class JWTService {
 
     public String createRefreshToken(User user) {
 
+        UserDtoForCreateJwtToken dto = UserMapper.toDto(user);
+
         return Jwts.builder()
-                .subject(user.getUsername())
+                .subject(dto.getUsername())
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + 1000L * 60 * 60 * 24 * 30 * 3))
                 .signWith(generateSecretKey())
