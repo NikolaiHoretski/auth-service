@@ -1,7 +1,7 @@
 package com.nikilaihoretski.auth_service.controller;
 
-import com.nikilaihoretski.auth_service.model.RegisterRequest;
-import com.nikilaihoretski.auth_service.service.AuthenticationService;
+import com.nikilaihoretski.auth_service.dto.RegisterRequest;
+import com.nikilaihoretski.auth_service.service.RegistrationAuthenticationService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -11,9 +11,9 @@ import java.util.Map;
 @RequestMapping("/api")
 public class LoginController {
 
-    private final AuthenticationService service;
+    private final RegistrationAuthenticationService service;
 
-    public LoginController(AuthenticationService service) {
+    public LoginController(RegistrationAuthenticationService service) {
         this.service = service;
     }
 

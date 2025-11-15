@@ -2,12 +2,10 @@ package com.nikilaihoretski.auth_service.security;
 
 import com.nikilaihoretski.auth_service.repository.UserRepository;
 import com.nikilaihoretski.auth_service.service.CustomUserDetailService;
-import com.nikilaihoretski.auth_service.service.UserServiceImpl;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.context.ApplicationContext;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -22,17 +20,11 @@ import java.io.IOException;
 public class JWTAuthFilter extends OncePerRequestFilter {
 
     private final JWTService jwtService;
-    private final UserServiceImpl userService;
-    private final ApplicationContext context;
+    private final CustomUserDetailService customUserDetailService;
 
-    private final UserRepository userRepository;
-
-    public JWTAuthFilter(JWTService jwtService, UserServiceImpl userService, ApplicationContext context,
-                         UserRepository userRepository) {
+    public JWTAuthFilter(JWTService jwtService, CustomUserDetailService customUserDetailService) {
         this.jwtService = jwtService;
-        this.userService = userService;
-        this.context = context;
-        this.userRepository = userRepository;
+        this.customUserDetailService = customUserDetailService;
     }
 
     @Override
@@ -53,9 +45,7 @@ public class JWTAuthFilter extends OncePerRequestFilter {
 
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             try {
-                CustomUserDetailService userDetailService = context.getBean(CustomUserDetailService.class);
-                UserDetails userDetails = userDetailService.loadUserByUsername(username);
-
+                UserDetails userDetails = customUserDetailService.loadUserByUsername(username);
                 UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                 authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
@@ -65,7 +55,7 @@ public class JWTAuthFilter extends OncePerRequestFilter {
             } catch (NumberFormatException e) {
                 logger.error("Invalid userId format: {}");
             }
-            }
-            filterChain.doFilter(request, response);
         }
+        filterChain.doFilter(request, response);
     }
+}

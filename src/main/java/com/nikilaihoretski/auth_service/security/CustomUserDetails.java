@@ -1,6 +1,7 @@
 package com.nikilaihoretski.auth_service.security;
 
 import com.nikilaihoretski.auth_service.model.Permissions;
+import com.nikilaihoretski.auth_service.model.Role;
 import com.nikilaihoretski.auth_service.model.Roles;
 import com.nikilaihoretski.auth_service.model.User;
 import org.slf4j.Logger;
@@ -29,13 +30,13 @@ public class CustomUserDetails implements UserDetails {
 
         Set<GrantedAuthority> authority = new HashSet<>();
 
-        user.getRoles().forEach(role -> {
-            authority.add(new SimpleGrantedAuthority("ROLE_" + role.getName()));
+        Role role = user.getRole();
+        authority.add(new SimpleGrantedAuthority("ROLE_" + role.getName()));
+        role.getPermissions().forEach(permission ->
+                authority.add(new SimpleGrantedAuthority(permission.getName())));
 
-            role.getPermissions().forEach(permission -> authority.add(new SimpleGrantedAuthority(permission.getName())));
+        logger.info("permission in Class CustomUserDetails: {}", role.getPermissions());
 
-            logger.info("permission in class CustomUserDetails: {}", role.getPermissions());
-        });
 
         return authority;
     }

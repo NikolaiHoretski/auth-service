@@ -12,6 +12,4 @@ public class UserDtoForCreateJwtToken {
     private String username;
     private String email;
     private String fullName;
-
-
 }

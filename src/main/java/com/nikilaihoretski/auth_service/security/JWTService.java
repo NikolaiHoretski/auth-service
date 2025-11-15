@@ -2,8 +2,6 @@ package com.nikilaihoretski.auth_service.security;
 
 import com.nikilaihoretski.auth_service.dto.UserDtoForCreateJwtToken;
 import com.nikilaihoretski.auth_service.dto.UserMapper;
-import com.nikilaihoretski.auth_service.model.Permission;
-import com.nikilaihoretski.auth_service.model.Role;
 import com.nikilaihoretski.auth_service.model.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -16,8 +14,6 @@ import org.springframework.stereotype.Service;
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 public class JWTService {

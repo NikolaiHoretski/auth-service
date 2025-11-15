@@ -1,6 +1,5 @@
 package com.nikilaihoretski.auth_service.configuration;
 
-import com.nikilaihoretski.auth_service.model.Permissions;
 import com.nikilaihoretski.auth_service.security.JWTAuthFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
