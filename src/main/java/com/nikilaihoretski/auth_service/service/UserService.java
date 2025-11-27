@@ -11,6 +11,7 @@ public interface UserService {
 
     User getUserByUsername(String username);
 
+
     List<User> getAllUsers();
 
     User updateUserField(String username, Map<String, Object> updates);

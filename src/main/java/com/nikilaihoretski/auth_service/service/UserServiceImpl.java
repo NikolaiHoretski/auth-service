@@ -2,6 +2,7 @@ package com.nikilaihoretski.auth_service.service;
 
 import com.nikilaihoretski.auth_service.model.User;
 import com.nikilaihoretski.auth_service.repository.UserRepository;
+import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -24,16 +25,19 @@ public class UserServiceImpl implements UserService {
         this.passwordEncoder = passwordEncoder;
     }
 
+    @Transactional
     @Override
     public User getUserByUsername(String username) {
         return userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("User not found: " + username));
     }
 
+    @Transactional
     @Override
     public List<User> getAllUsers() {
         return userRepository.findAll();
     }
 
+    @Transactional
     @Override
     public User updateUserField(String username, Map<String, Object> updates) {
 
@@ -47,12 +51,13 @@ public class UserServiceImpl implements UserService {
         if (updates.containsKey("password")) {
             user.setPassword(passwordEncoder.encode((String) updates.get("password")));
         }
-        return null;
+        return user;
     }
 
+    @Transactional
     @Override
     public void delete(String username) {
-        User user = userRepository.findById(username).orElseThrow(() -> new UsernameNotFoundException("User not found: " + username));
-        userRepository.deleteById(username);
+        userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("User not found: " + username));
+        userRepository.deleteByUsername(username);
     }
 }

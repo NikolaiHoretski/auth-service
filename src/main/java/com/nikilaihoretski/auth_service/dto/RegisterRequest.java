@@ -14,7 +14,7 @@ import java.util.Set;
 public class RegisterRequest {
 
     private String username;
-    private String fullName;
+    private String fullname;
     private String password;
     private String email;
     private String role;

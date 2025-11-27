@@ -8,6 +8,9 @@ import com.nikilaihoretski.auth_service.repository.PermissionRepository;
 import com.nikilaihoretski.auth_service.repository.RoleRepository;
 import com.nikilaihoretski.auth_service.repository.UserRepository;
 import com.nikilaihoretski.auth_service.security.JWTService;
+import jakarta.transaction.Transactional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -15,10 +18,14 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @Service
 public class RegistrationAuthenticationService {
+
+    Logger logger = LoggerFactory.getLogger(RegistrationAuthenticationService.class);
 
     private final AuthenticationManager authenticationManager;
     private final UserRepository userRepository;
@@ -36,6 +43,7 @@ public class RegistrationAuthenticationService {
         this.passwordEncoder = passwordEncoder;
     }
 
+    @Transactional
     public void register(RegisterRequest registerRequest) {
 
         if (userRepository.existsByUsername(registerRequest.getUsername())) {
@@ -44,7 +52,7 @@ public class RegistrationAuthenticationService {
 
         User user = new User();
         user.setUsername(registerRequest.getUsername());
-        user.setFullName(registerRequest.getFullName());
+        user.setFullName(registerRequest.getFullname());
         user.setPassword(passwordEncoder.encode(registerRequest.getPassword()));
         user.setEmail(registerRequest.getEmail());
 
@@ -53,12 +61,10 @@ public class RegistrationAuthenticationService {
 
         user.setRole(role);
 
-        for (String permissionName : registerRequest.getPermissions()) {
-            Permission permission = new Permission();
-            permission.setName(permissionName);
-            permissionRepository.save(permission);
-            role.getPermissions().add(permission);
-        }
+        Set<String> permNames = registerRequest.getPermissions();
+        logger.info(permNames.toString());
+
+        List<Permission> permissions = permissionRepository.findByNameIn(permNames);
 
         roleRepository.save(role);
         user.setRole(role);
