@@ -5,11 +5,11 @@ import com.nikilaihoretski.auth_service.model.Permission;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Collection;
-import java.util.List;
+import java.util.Set;
 
 public interface PermissionRepository extends JpaRepository<Permission, Long> {
 
-    List<Permission> findByNameIn(Collection<String> names);
+    Set<Permission> findByNameIn(Collection<String> names);
 
 
 }

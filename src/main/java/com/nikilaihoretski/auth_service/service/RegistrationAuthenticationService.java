@@ -55,6 +55,7 @@ public class RegistrationAuthenticationService {
         user.setFullName(registerRequest.getFullname());
         user.setPassword(passwordEncoder.encode(registerRequest.getPassword()));
         user.setEmail(registerRequest.getEmail());
+        user.setEnabled(true);
 
         Role role = roleRepository.findByName(registerRequest.getRole()).orElseThrow(() ->
                 new RuntimeException("Role not found: " + registerRequest.getRole()));
@@ -62,9 +63,12 @@ public class RegistrationAuthenticationService {
         user.setRole(role);
 
         Set<String> permNames = registerRequest.getPermissions();
-        logger.info(permNames.toString());
+        logger.info("permissions, которые приходят с фронта: {}", permNames);
 
-        List<Permission> permissions = permissionRepository.findByNameIn(permNames);
+        Set<Permission> permissions = permissionRepository.findByNameIn(permNames);
+        logger.info("permissions, которые приходит из базы: {}", permissions);
+
+
 
         roleRepository.save(role);
         user.setRole(role);
