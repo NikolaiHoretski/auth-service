@@ -1,14 +1,14 @@
 package com.nikilaihoretski.auth_service.service;
 
 import com.nikilaihoretski.auth_service.dto.RegisterRequest;
-import com.nikilaihoretski.auth_service.model.Permission;
-import com.nikilaihoretski.auth_service.model.Role;
-import com.nikilaihoretski.auth_service.model.User;
+import com.nikilaihoretski.auth_service.model.*;
 import com.nikilaihoretski.auth_service.repository.PermissionRepository;
 import com.nikilaihoretski.auth_service.repository.RoleRepository;
 import com.nikilaihoretski.auth_service.repository.UserRepository;
+import com.nikilaihoretski.auth_service.repository.UserRolePermissionRepository;
 import com.nikilaihoretski.auth_service.security.JWTService;
 import jakarta.transaction.Transactional;
+import lombok.SneakyThrows;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -17,10 +17,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class RegistrationAuthenticationService {
@@ -33,16 +31,19 @@ public class RegistrationAuthenticationService {
     private final PermissionRepository permissionRepository;
     private final JWTService service;
     private final PasswordEncoder passwordEncoder;
+    private final UserRolePermissionRepository userRolePermissionRepository;
 
-    public RegistrationAuthenticationService(AuthenticationManager authenticationManager, UserRepository userRepository, RoleRepository roleRepository, PermissionRepository permissionRepository, JWTService service, PasswordEncoder passwordEncoder) {
+    public RegistrationAuthenticationService(AuthenticationManager authenticationManager, UserRepository userRepository, RoleRepository roleRepository, PermissionRepository permissionRepository, JWTService service, PasswordEncoder passwordEncoder, UserRolePermissionRepository userRolePermissionRepository) {
         this.authenticationManager = authenticationManager;
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.permissionRepository = permissionRepository;
         this.service = service;
         this.passwordEncoder = passwordEncoder;
+        this.userRolePermissionRepository = userRolePermissionRepository;
     }
 
+    @SneakyThrows
     @Transactional
     public void register(RegisterRequest registerRequest) {
 
@@ -60,19 +61,30 @@ public class RegistrationAuthenticationService {
         Role role = roleRepository.findByName(registerRequest.getRole()).orElseThrow(() ->
                 new RuntimeException("Role not found: " + registerRequest.getRole()));
 
-        user.setRole(role);
+        Set<String> requestPermission = registerRequest.getPermissions();
+        Set<Permission> permissions = new HashSet<>(permissionRepository.findByNameIn(requestPermission));
 
-        Set<String> permNames = registerRequest.getPermissions();
-        logger.info("permissions, которые приходят с фронта: {}", permNames);
+        Set<String> missing = requestPermission.stream()
+                .filter(name -> permissions.stream().noneMatch(p -> p.getName().equals(name)))
+                .collect(Collectors.toSet());
 
-        Set<Permission> permissions = permissionRepository.findByNameIn(permNames);
-        logger.info("permissions, которые приходит из базы: {}", permissions);
+        if(!missing.isEmpty()) {
+            throw new IllegalAccessException("Permission not found in DB " + missing);
+        }
 
-
-
-        roleRepository.save(role);
-        user.setRole(role);
         userRepository.save(user);
+
+        Set<UserRolePermission> userRolePermissions = new HashSet<>();
+
+        for (Permission permission : permissions) {
+            UserRolePermission urp = new UserRolePermission();
+            urp.setId(new UserRolePermissionId(user.getId(), role.getId(), permission.getId()));
+            urp.setUser(user);
+            urp.setRole(role);
+            urp.setPermission(permission);
+            userRolePermissionRepository.save(urp);
+        }
+
     }
 
     public Map<String, String> verify(RegisterRequest registerRequest) throws IllegalAccessException {

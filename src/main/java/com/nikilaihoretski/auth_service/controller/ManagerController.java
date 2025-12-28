@@ -9,9 +9,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/manager")
 public class ManagerController {
 
-    @PreAuthorize("hasAuthority(T(com.nikilaihoretski.auth_service.model.Permissions).MANAGE_USERS.getAuthority()) and" +
-    "hasAuthority(T(com.nikilaihoretski.auth_service.model.Permissions).MANAGE_PRODUCTS_CATALOG.getAuthority())"
-    )
+    @PreAuthorize("hasAuthority(T(com.nikilaihoretski.auth_service.model.Permissions).MANAGE_USERS.getAuthority()) and " +
+                    "hasAuthority(T(com.nikilaihoretski.auth_service.model.Permissions).MANAGE_PRODUCTS_CATALOG.getAuthority())")
     @GetMapping("/hello")
     public String helloManager() {
         return "Hello Manager";

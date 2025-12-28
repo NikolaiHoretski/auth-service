@@ -6,8 +6,6 @@ import lombok.*;
 import java.util.HashSet;
 import java.util.Set;
 
-import static com.nikilaihoretski.auth_service.util.UnitDictionary.ID_GENERATOR_SUFFIX;
-
 @Entity
 @Table(name = "users")
 @Getter
@@ -17,14 +15,10 @@ import static com.nikilaihoretski.auth_service.util.UnitDictionary.ID_GENERATOR_
 @ToString
 public class User {
 
-    public static final String ENTITY_NAME = "User";
-    public static final String ENTITY_GENERATOR_NAME = ENTITY_NAME + ID_GENERATOR_SUFFIX;
-
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = ENTITY_GENERATOR_NAME)
-    @SequenceGenerator(name = ENTITY_GENERATOR_NAME, sequenceName = "USER_SEQ", allocationSize = 1)
-    @Column(name = "id", unique = true, nullable = false, updatable = false)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    protected Long id;
 
     @Column(name = "username", unique = true, nullable = false)
     private String username;
@@ -41,9 +35,7 @@ public class User {
     @Column(name = "enabled")
     private boolean enabled;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "role_id")
-    private Role role;
-
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private Set<UserRolePermission> userRolePermission = new HashSet<>();
 
 }

@@ -17,24 +17,12 @@ import static com.nikilaihoretski.auth_service.util.UnitDictionary.ID_GENERATOR_
 @ToString
 public class Role {
 
-    public static final String ENTITY_NAME = "Role";
-    public static final String ENTITY_GENERATOR_NAME = ENTITY_NAME + ID_GENERATOR_SUFFIX;
-
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = ENTITY_GENERATOR_NAME)
-    @SequenceGenerator(name = ENTITY_GENERATOR_NAME, sequenceName = "ROLE_SEQ", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "role_name")
+    @Column(name = "role_name", nullable = false, unique = true)
     private String name;
-
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(
-            name = "roles_permissions",
-            joinColumns = @JoinColumn(name = "role_id"),
-            inverseJoinColumns = @JoinColumn(name = "permission_id")
-    )
-    private Set<Permission> permissions = new HashSet<>();
 
 }

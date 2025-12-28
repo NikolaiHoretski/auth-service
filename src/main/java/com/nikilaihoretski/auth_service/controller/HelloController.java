@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/reports")
-public class Controller {
+public class HelloController {
 
     @PreAuthorize("hasAuthority(T(com.nikilaihoretski.auth_service.model.Permissions).VIEW_PRODUCTS.getAuthority())")
     @GetMapping("/hello")

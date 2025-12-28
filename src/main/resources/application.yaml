@@ -29,6 +29,8 @@ devtools:
     enabled: true
 
 logging:
+  file:
+    name: logs/app.log
   level:
     root: INFO
     org.springframework.web: DEBUG

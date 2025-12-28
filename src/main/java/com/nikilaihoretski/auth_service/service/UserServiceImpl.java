@@ -41,7 +41,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public User updateUserField(String username, Map<String, Object> updates) {
 
-        User user = userRepository.findById(username).orElseThrow(() -> new UsernameNotFoundException("User not found: " + username));
+        User user = userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("User not found: " + username));
         if (updates.containsKey("fullName")) {
             user.setFullName((String) updates.get("fullName"));
         }
@@ -50,6 +50,9 @@ public class UserServiceImpl implements UserService {
         }
         if (updates.containsKey("password")) {
             user.setPassword(passwordEncoder.encode((String) updates.get("password")));
+        }
+        if(updates.containsKey("enables")) {
+            user.setEnabled((boolean) updates.get("enabled"));
         }
         return user;
     }

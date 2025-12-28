@@ -1,9 +1,6 @@
 package com.nikilaihoretski.auth_service.security;
 
-import com.nikilaihoretski.auth_service.model.Permissions;
-import com.nikilaihoretski.auth_service.model.Role;
-import com.nikilaihoretski.auth_service.model.Roles;
-import com.nikilaihoretski.auth_service.model.User;
+import com.nikilaihoretski.auth_service.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.GrantedAuthority;
@@ -17,6 +14,8 @@ import java.util.Set;
 
 public class CustomUserDetails implements UserDetails {
 
+    private static final String ROLE = "ROLE_";
+
     Logger logger = LoggerFactory.getLogger(CustomUserDetails.class);
 
     private final User user;
@@ -28,17 +27,16 @@ public class CustomUserDetails implements UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
 
-        Set<GrantedAuthority> authority = new HashSet<>();
+        Set<GrantedAuthority> authorities = new HashSet<>();
 
-        Role role = user.getRole();
-        authority.add(new SimpleGrantedAuthority("ROLE_" + role.getName()));
-        role.getPermissions().forEach(permission ->
-                authority.add(new SimpleGrantedAuthority(permission.getName())));
+        for(UserRolePermission urp : user.getUserRolePermission()) {
+            authorities.add(new SimpleGrantedAuthority(ROLE + urp.getRole().getName()));
+            authorities.add(new SimpleGrantedAuthority(urp.getPermission().getName()));
+        }
 
-        logger.info("permission in Class CustomUserDetails: {}", role.getPermissions());
+        logger.info("Total authorities for {}: {}", user.getUsername(), authorities);
 
-
-        return authority;
+        return authorities;
     }
 
     @Override
@@ -49,5 +47,10 @@ public class CustomUserDetails implements UserDetails {
     @Override
     public String getUsername() {
         return user.getUsername();
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return user.isEnabled();
     }
 }
